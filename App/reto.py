@@ -32,7 +32,6 @@ import csv
 
 from ADT import list as lt
 from DataStructures import listiterator as it
-from DataStructures import liststructure as lt
 
 from time import process_time 
 
@@ -63,25 +62,99 @@ def compareRecordIds (recordA, recordB):
 
 
 
-def loadCSVFile (file, cmpfunction):
-    lst=lt.newList("ARRAY_LIST", cmpfunction)
+def loadCSVFile (file,cmpfunction):
+    sep=";"
+    #lst = lt.newList("ARRAY_LIST") #Usando implementacion arraylist
+    lst = lt.newList("SINGLE_LINKED") #Usando implementacion linkedlist
+    
     dialect = csv.excel()
-    dialect.delimiter=";"
+    dialect.delimiter=sep
     try:
-        with open(  cf.data_dir + file, encoding="utf-8") as csvfile:
-            row = csv.DictReader(csvfile, dialect=dialect)
-            for elemento in row: 
-                lt.addLast(lst,elemento)
+        with open(file, encoding="utf-8") as csvfile:
+            spamreader = csv.DictReader(csvfile, dialect=dialect)
+            for row in spamreader: 
+                lt.addLast(lst,row)
     except:
         print("Hubo un error con la carga del archivo")
+    
     return lst
 
 
-def loadMovies ():
-    lst = loadCSVFile("theMoviesdb/movies-small.csv",compareRecordIds) 
+
+def loadMoviesDetails ():
+    lst = loadCSVFile("Data/themoviesdb/MoviesDetailsCleaned-small.csv",compareRecordIds) 
     print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
     return lst
 
+def loadMoviesCasting ():
+    lst = loadCSVFile("Data/themoviesdb/MoviesCastingRaw-small.csv",compareRecordIds) 
+    print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
+    return lst
+
+
+# Req 3
+
+def ConocerTrabajoDirector (lista1, lista2, nom):
+    listaPelis=[]
+    numpeliculas=0
+    proPeliculas=0.0
+
+    for x in range(11, lt.size(lista1)):
+        y=lt.getElement(lista2, x)
+        if y["director_name"] == nom: 
+            listaPelis.append(lt.getElement(lista1, x)["original_title"])
+            numpeliculas += 1 
+            proPeliculas = float(lt.getElement(lista1, x)['vote_average'])
+
+    if numpeliculas != 0:
+
+        promfinal= proPeliculas/numpeliculas
+        print("La lista de peliculas es: ", listaPelis)
+        print("El numero de peliculas dirigidas por el director es: ", numpeliculas)
+        print("El promedio de la calificacion de las peliculas es: ", promfinal)
+
+    else:
+
+        print("Ha ocurrido un error, porfavor escriba el nombre de otro director")
+
+
+#Req 4
+def ConocerTrabajoActor (lista1, lista2, nom):
+    listaPelis=[]
+    numpeliculas=0
+    proPeliculas=0.0
+    posiblesDirectores={}
+    
+    for x in range(1,  lt.size(lista1)):
+        if lt.getElement(lista2, x)["actor1_name"] == nom or lt.getElement(lista2, x)["actor2_name"] == nom or lt.getElement(lista2, x)["actor3_name"] == nom or lt.getElement(lista2, x)["actor4_name"] == nom or lt.getElement(lista2, x)["actor5_name"] == nom:
+           listaPelis.append(lt.getElement(lista1, x)["original_title"])
+           numpeliculas += 1
+           proPeliculas += float(lt.getElement(lista1, x)['vote_average'])
+
+           nom_direc=lt.getElement(lista2, x)["director_name"]
+           if nom_direc in posiblesDirectores:
+               posiblesDirectores[nom_direc] += 1
+           else:
+               posiblesDirectores[nom_direc] = 1
+
+    
+    
+    if numpeliculas != 0:
+        director=""
+        i=0
+        for x in posiblesDirectores:
+            if posiblesDirectores[x] > i:
+                i=posiblesDirectores[x]
+                director = x
+
+        promfinal= proPeliculas/numpeliculas
+        print("La lista de peliculas es: ", listaPelis)
+        print("El numero de peliculas en las que el actor ha partisipado son: ", numpeliculas)
+        print("El promedio de la calificacion de las peliculas es: ", promfinal)
+        print("El nombre del director con el que actor ha trabajado mas veces es: ", director)
+    else:
+        print("Ha ocurrido un error, porfavor escriba el nombre de otro actor")
+    
 
 def main():
     """
@@ -99,7 +172,13 @@ def main():
         if len(inputs)>0:
 
             if int(inputs[0])==1: #opcion 1
-                lstmovies = loadMovies()
+                lstmovies = loadMoviesDetails()
+                lstmovcas = loadMoviesCasting()
+                print("datos cargados")
+                print("Conocer trabajo de un directo: ")
+                ConocerTrabajoDirector(lstmovies, lstmovcas, "Steven Spielberg")
+                print("Conocer trabajo actor")
+                ConocerTrabajoActor(lstmovies, lstmovcas, "Keanu Reeves")
 
             elif int(inputs[0])==2: #opcion 2
                 pass
@@ -122,3 +201,5 @@ def main():
                 
 if __name__ == "__main__":
     main()
+
+
