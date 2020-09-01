@@ -29,6 +29,7 @@
 import config as cf
 import sys
 import csv
+import unicodedata as uni
 
 from ADT import list as lt
 from DataStructures import listiterator as it
@@ -82,12 +83,12 @@ def loadCSVFile (file,cmpfunction):
 
 
 def loadMoviesDetails ():
-    lst = loadCSVFile("Data/themoviesdb/MoviesDetailsCleaned-small.csv",compareRecordIds) 
+    lst = loadCSVFile("Data/themoviesdb/MoviesDetailsCleaned-large.csv",compareRecordIds) 
     print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
     return lst
 
 def loadMoviesCasting ():
-    lst = loadCSVFile("Data/themoviesdb/MoviesCastingRaw-small.csv",compareRecordIds) 
+    lst = loadCSVFile("Data/themoviesdb/MoviesCastingRaw-large.csv",compareRecordIds) 
     print("Datos cargados, " + str(lt.size(lst)) + " elementos cargados")
     return lst
 
@@ -99,9 +100,9 @@ def ConocerTrabajoDirector (lista1, lista2, nom):
     numpeliculas=0
     proPeliculas=0.0
 
-    for x in range(11, lt.size(lista1)):
+    for x in range(1, lt.size(lista1)):
         y=lt.getElement(lista2, x)
-        if y["director_name"] == nom: 
+        if (y["director_name"] == nom): 
             listaPelis.append(lt.getElement(lista1, x)["original_title"])
             numpeliculas += 1 
             proPeliculas = float(lt.getElement(lista1, x)['vote_average'])
@@ -174,19 +175,19 @@ def main():
             if int(inputs[0])==1: #opcion 1
                 lstmovies = loadMoviesDetails()
                 lstmovcas = loadMoviesCasting()
-                print("datos cargados")
-                print("Conocer trabajo de un directo: ")
-                ConocerTrabajoDirector(lstmovies, lstmovcas, "Steven Spielberg")
-                print("Conocer trabajo actor")
-                ConocerTrabajoActor(lstmovies, lstmovcas, "Keanu Reeves")
+                
 
             elif int(inputs[0])==2: #opcion 2
                 pass
 
             elif int(inputs[0])==3: #opcion 3
+                director=input("Escriba el nombre de un director para saber toda la informacion: ")
+                ConocerTrabajoDirector(lstmovies, lstmovcas, director)
                 pass
 
             elif int(inputs[0])==4: #opcion 4
+                Actor=input("Escriba el nombre de un actor para saber toda la informacion: ")
+                ConocerTrabajoActor(lstmovies, lstmovcas, actor)
                 pass
 
             elif int(inputs[0])==3: #opcion 5
