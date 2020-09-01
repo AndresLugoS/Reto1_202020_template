@@ -187,7 +187,7 @@ def main():
 
             elif int(inputs[0])==4: #opcion 4
                 Actor=input("Escriba el nombre de un actor para saber toda la informacion: ")
-                ConocerTrabajoActor(lstmovies, lstmovcas, actor)
+                ConocerTrabajoActor(lstmovies, lstmovcas, Actor)
                 pass
 
             elif int(inputs[0])==3: #opcion 5
